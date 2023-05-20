@@ -1,0 +1,1 @@
+DEBUG=nts:* npm start

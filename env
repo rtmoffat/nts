@@ -1,0 +1,5 @@
+#Change values and move into .env
+DB_USER="dbuser"
+DB_PASS="dbpass"
+DB_NAME="dbname"
+DB_SERVER="dbserver"
