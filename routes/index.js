@@ -23,14 +23,33 @@ router.use(cors({
 }));
 
 router.all('/:restaurants(restaurants)/:restaurantId?/:tables(tables)?/:tableId?', (req,res,next) => {
+		var query='';
+		var qParams=[];
 
-		query='select * from restaurants;';
-		//query='select * from restaurants where id=?;';
-		//query='insert into restaurants (Name) values(?);';
-		connection.query(query,(error, results, fields) => {
-			console.log('Results: ',results);
-			res.send(results);
-		});
+		if (req.params.tables) {
+			query='select * from tables where restaurant_id=?';
+			qParams[0]=req.params.restaurantId;
+			if (req.params.tableId) {
+				query='select * from tables where id=?;';
+				qParams[1]=req.params.tableId;
+			}
+		}
+		else if (req.params.restaurants) {
+			query='select * from restaurants;';
+			if (req.params.restaurantId) {
+				query='select * from restaurants where id=?;';
+				qParams[0]=req.params.restaurantId;
+			}
+		}
+		if (query != '') {
+			connection.query(query,qParams,(error, results, fields) => {
+				console.log('Results: ',query,qParams,results);
+				res.send(results);
+			});
+		}
+		else {
+			res.send([]);
+		}
 });
 
 router.get('/',(req,res,next) => {
