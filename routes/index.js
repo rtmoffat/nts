@@ -53,16 +53,18 @@ router.all('/:restaurants(restaurants)/:restaurantId?/:tables(tables)?/:tableId?
 });
 
 //submit request for reservation
-router.post('/reserve/:restaurant_id/:table_id',(req,res,next) => {
+router.post('/reserve/:restaurant_id/:table_id/:user_id',(req,res,next) => {
 	query='';
 	qParams=[];
-	query='update tables set seats_available=12 where restaurant_id=? and id=?;';
-	qParams[0]=req.params.restaurant_id;
-	qParams[1]=req.params.table_id;
-        connection.query(query,qParams,(error, results, fields) => {
-                                console.log('Results: ',query,qParams,results);
-                                res.send(results);
-                        });
+	query='insert into reservations (user_id,restaurant_id,table_id,reservation_status) values (?,?,?,?);';
+	qParams=[req.params.user_id,req.params.restaurant_id,req.params.table_id,'REQUESTED'];
+	queryDb(query,qParams,connection,res);
+});
+
+router.post('/offer/:restaurant_id/:seats_available/:owner_id',(req,res,next) => {
+	query='insert into tables (restaurant_id,seats_available,owner_id) values(?,?,?)';
+	qParams=[req.params.restaurant_id,req.params.seats_available,req.params.owner_id];
+	queryDb(query,qParams,connection,res);
 });
 
 router.get('/',(req,res,next) => {
@@ -70,4 +72,10 @@ router.get('/',(req,res,next) => {
 	res.send('TS Coming Soon!' + req.query);
 });
 
+function queryDb(query,qParams,connection,res) {
+	connection.query(query,qParams,(error, results, fields) => {
+                                console.log('Results: ',query,qParams,results);
+				res.send(results);
+                        });
+}
 module.exports = router;
