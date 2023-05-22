@@ -52,6 +52,19 @@ router.all('/:restaurants(restaurants)/:restaurantId?/:tables(tables)?/:tableId?
 		}
 });
 
+//submit request for reservation
+router.post('/reserve/:restaurant_id/:table_id',(req,res,next) => {
+	query='';
+	qParams=[];
+	query='update tables set seats_available=12 where restaurant_id=? and id=?;';
+	qParams[0]=req.params.restaurant_id;
+	qParams[1]=req.params.table_id;
+        connection.query(query,qParams,(error, results, fields) => {
+                                console.log('Results: ',query,qParams,results);
+                                res.send(results);
+                        });
+});
+
 router.get('/',(req,res,next) => {
 	console.log(req.query);
 	res.send('TS Coming Soon!' + req.query);
