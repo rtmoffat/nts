@@ -61,12 +61,20 @@ router.post('/reserve/:restaurant_id/:table_id/:user_id',(req,res,next) => {
 	queryDb(query,qParams,connection,res);
 });
 
+//Offers a new table
 router.post('/offer/:restaurant_id/:seats_available/:owner_id',(req,res,next) => {
 	query='insert into tables (restaurant_id,seats_available,owner_id) values(?,?,?)';
 	qParams=[req.params.restaurant_id,req.params.seats_available,req.params.owner_id];
 	queryDb(query,qParams,connection,res);
 });
 
+//List all reservations requested by user_id
+router.get('/reserve/:user_id',(req,res,next) => {
+	query='select * from reservations where user_id=?;';
+	qParams=[req.params.user_id];
+	queryDb(query,qParams,connection,res);
+});
+//Default
 router.get('/',(req,res,next) => {
 	console.log(req.query);
 	res.send('TS Coming Soon!' + req.query);
