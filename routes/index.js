@@ -52,6 +52,12 @@ router.all('/:restaurants(restaurants)/:restaurantId?/:tables(tables)?/:tableId?
 		}
 });
 
+//Accept reservation
+router.put('/reserve/:reservation_id/:user_id',(req,res,next) => {
+	query='update reservations set reservation_status=\'APPROVED\' where id=? and user_id=?';
+	qParams=[req.params.reservation_id,req.params.user_id];
+	queryDb(query,qParams,connection,res);
+});
 //submit request for reservation
 router.post('/reserve/:restaurant_id/:table_id/:user_id',(req,res,next) => {
 	query='';
@@ -83,6 +89,7 @@ router.get('/',(req,res,next) => {
 function queryDb(query,qParams,connection,res) {
 	connection.query(query,qParams,(error, results, fields) => {
                                 console.log('Results: ',query,qParams,results);
+				console.log("Fields: ",fields);
 				res.send(results);
                         });
 }
