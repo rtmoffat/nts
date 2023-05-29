@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 require('dotenv').config();
+
 
 console.log(process.env.DB_NAME);
 
@@ -93,4 +96,34 @@ function queryDb(query,qParams,connection,res) {
 				res.send(results);
                         });
 }
+
+router.get('/auth',(req,res,next) => {
+	getTokens(req.query.code,res);
+});
+
+function getTokens(auth_code,res) {
+	var request = require('request');
+	var options = {
+	  'method': 'POST',
+	  'url': 'https://nts.auth.us-east-1.amazoncognito.com/oauth2/token',
+	  'headers': {
+	    'Content-Type': 'application/x-www-form-urlencoded',
+	    'Cookie': 'XSRF-TOKEN=4f471157-5c5e-4797-8475-73b0d69c648f'
+	  },
+	  form: {
+	    'grant_type': 'authorization_code',
+	    'client_id': '2ulah4hudjljpqtp08orobipip',
+	    'code': auth_code,
+	    'redirect_uri': 'https://tableshare.schplorph.com'
+  		}
+	};
+
+	request(options, function (error, response) {
+  		if (error) throw new Error(error);
+  		console.log(response.body);
+		res.cookie("access_token_nts",response.body,{httpOnly: true});
+		res.send(response.body);
+	});
+}
+
 module.exports = router;
